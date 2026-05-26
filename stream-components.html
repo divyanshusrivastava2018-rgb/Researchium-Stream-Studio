@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stream components – Researchium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0c0e14;
+      --text: #f1f3f9;
+      --text2: #9aa3b8;
+      --border: rgba(255,255,255,.08);
+    }
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header a { color: var(--text2); text-decoration: none; font-size: 13px; font-weight: 600; }
+    header a:hover { color: var(--text); }
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 960px) { main { grid-template-columns: 1fr; } }
+    .panel-full { grid-column: 1 / -1; }
+    h2 { font-size: 14px; font-weight: 700; color: var(--text2); margin: 0 0 12px; letter-spacing: 0.04em; }
+    .panel {
+      background: #141824;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 80px;
+    }
+    #viewerMount { background: transparent; border: none; padding: 0; }
+  </style>
+  <script>
+    (function () {
+      const h = location.hostname;
+      if (h === '127.0.0.1' || h === 'localhost') {
+        window.RESEARCHIUM_STUDIO_URL = 'http://127.0.0.1:5050';
+        window.RESEARCHIUM_API_URL = 'http://127.0.0.1:4000';
+      }
+    })();
+  </script>
+</head>
+<body>
+  <header>
+    <div>
+      <strong>Researchium stream components</strong>
+      <span id="roomLabel" style="color:var(--text2);font-size:13px;margin-left:12px"></span>
+    </div>
+    <nav style="display:flex;gap:16px">
+      <a href="stream-dashboard.html">Dashboard</a>
+      <a href="studio.html">Studio</a>
+      <a href="studio-lobby.html">Sign in</a>
+    </nav>
+    <div id="viewerMount"></div>
+  </header>
+  <main>
+    <section class="panel panel-full">
+      <h2>PLATFORM CONNECTIONS</h2>
+      <div id="platformsMount"></div>
+    </section>
+    <section class="panel">
+      <h2>STREAM CONTROLS</h2>
+      <div id="controlsMount"></div>
+    </section>
+    <section class="panel">
+      <h2>UNIFIED CHAT</h2>
+      <div id="chatMount"></div>
+    </section>
+  </main>
+
+  <script src="js/studio-auth.js"></script>
+  <script src="js/stream-components-loader.js"></script>
+  <script>
+    const auth = window.ResearchiumStudio;
+    const slug =
+      new URLSearchParams(location.search).get('room') ||
+      JSON.parse(sessionStorage.getItem('researchium_studio_session') || '{}').roomSlug;
+
+    document.getElementById('roomLabel').textContent = slug ? `Room: ${slug}` : 'No room — open from dashboard or add ?room=';
+
+    auth.ensureSignedIn().then(() => {
+      window.ResearchiumStreamComponentsLoader.init({
+        roomSlug: slug,
+        platformsEl: document.getElementById('platformsMount'),
+        showGoLive: true,
+        controlsEl: document.getElementById('controlsMount'),
+        chatEl: document.getElementById('chatMount'),
+        viewerEl: document.getElementById('viewerMount'),
+        viewerCompact: true,
+        intervalMs: 5000,
+        onGoLiveResult: (r) => alert(r.status === 'live' ? 'Live!' : `Status: ${r.status}`),
+      });
+    }).catch(() => location.replace('studio-lobby.html'));
+  </script>
+</body>
+</html>

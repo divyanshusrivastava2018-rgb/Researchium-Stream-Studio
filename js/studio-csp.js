@@ -1,0 +1,3 @@
+/** Shared Content-Security-Policy for static studio pages (dev-friendly). */
+window.ResearchiumCspMeta =
+  "default-src 'self'; script-src 'self' https://cdn.socket.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' http://127.0.0.1:4000 http://127.0.0.1:4001 ws://127.0.0.1:4001 http://127.0.0.1:5050 ws://127.0.0.1:5050 http://localhost:4000 http://localhost:4001 ws://localhost:4001 http://localhost:5050 ws://localhost:5050; img-src 'self' data: blob:; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'";

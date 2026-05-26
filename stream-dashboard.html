@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stream Studio – Researchium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0c0e14;
+      --bg2: #141824;
+      --bg3: #1c2233;
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.14);
+      --text: #f1f3f9;
+      --text2: #9aa3b8;
+      --text3: #5c6578;
+      --accent: #8b5cf6;
+      --accent2: #6d28d9;
+      --accent-soft: #c4b5fd;
+      --gold: #f59e0b;
+      --red: #ef4444;
+      --green: #10b981;
+      --radius: 12px;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --mono: 'DM Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .logo {
+      padding: 20px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo a {
+      display: block;
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+    }
+    .logo a span { color: var(--gold); }
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+    .channel-card {
+      margin: 16px 12px;
+      padding: 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .channel-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .channel-name { font-size: 13px; font-weight: 600; }
+    .channel-sub { font-size: 11px; color: var(--text2); }
+    .nav { padding: 8px 10px; flex: 1; overflow-y: auto; }
+    .nav-section {
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 14px 12px 6px;
+      font-weight: 600;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 2px;
+      transition: background 0.15s, color 0.15s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+    .nav-item:hover { background: var(--bg3); color: var(--text); }
+    .nav-item.active {
+      background: rgba(139, 92, 246, 0.18);
+      color: var(--accent-soft);
+    }
+    .nav-item--muted { opacity: 0.55; cursor: default; }
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .topbar-title { font-size: 22px; font-weight: 700; }
+    .back-link {
+      font-size: 13px;
+      color: var(--text2);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .back-link:hover { color: var(--accent-soft); }
+    .topbar-right { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .content { padding: 24px 28px; flex: 1; }
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .platform-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .platform-card.connected { border-color: rgba(16, 185, 129, 0.45); }
+    .platform-card h3 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+    .platform-card .status { font-size: 12px; color: var(--text2); }
+    .platform-card .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+    .ingest-box {
+      margin-top: 20px;
+      padding: 16px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text2);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .upgrade-banner {
+      background: linear-gradient(90deg, var(--accent2), #3b82f6);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .tabs { display: flex; gap: 6px; }
+    .tab {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .tab.active { background: var(--bg3); color: var(--text); }
+    .streams-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .streams-table th {
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text3);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .streams-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    .streams-table tr:last-child td { border-bottom: none; }
+    .streams-table tbody tr {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .streams-table tbody tr:hover { background: var(--bg3); }
+    .stream-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .thumb {
+      width: 80px;
+      height: 45px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--bg3));
+      flex-shrink: 0;
+    }
+    .stream-title { font-weight: 600; color: #fff; }
+    .stream-meta { font-size: 11px; color: var(--text2); font-family: var(--mono); }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg3);
+      color: var(--text2);
+    }
+    .badge-live { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 16px 20px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text3);
+      display: inline-block;
+      margin-right: 6px;
+    }
+    .status-dot.live { background: var(--red); animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* New stream modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal {
+      width: 100%;
+      max-width: 480px;
+      background: #fff;
+      color: #1e293b;
+      border-radius: 16px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 22px 8px;
+    }
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    .modal-close:hover { background: #f1f5f9; color: #0f172a; }
+    .modal-body { padding: 8px 16px 20px; }
+    .stream-option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 16px;
+      margin-bottom: 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    .stream-option:hover {
+      border-color: #c4b5fd;
+      background: #faf5ff;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12);
+    }
+    .stream-option:last-child { margin-bottom: 0; }
+    .stream-option-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .stream-option-text { flex: 1; min-width: 0; }
+    .stream-option-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+    .stream-option-desc {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    .stream-option-arrow {
+      color: #94a3b8;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .modal-step { display: none; }
+    .modal-step.active { display: block; }
+    .modal-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      background: none;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0 22px 12px;
+      font-family: inherit;
+    }
+    .modal-back:hover { color: #8b5cf6; }
+    .rtmp-box {
+      margin: 0 16px 16px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #334155;
+      word-break: break-all;
+    }
+    .rtmp-label {
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar { width: 72px; }
+      .logo-sub, .channel-name, .channel-sub, .nav-item span.label,
+      .nav-section { display: none; }
+      .channel-card { justify-content: center; padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" aria-label="Studio navigation">
+    <div class="logo">
+      <a href="researchium-stream.html">Researchium<span>Stream</span></a>
+      <div class="logo-sub">Stream Studio</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">Studio</div>
+      <button type="button" class="nav-item active" data-panel="go-live" id="navGoLive">
+        <span aria-hidden="true">▶</span>
+        <span class="label">Go live</span>
+      </button>
+      <button type="button" class="nav-item" data-panel="streams">
+        <span aria-hidden="true">☰</span>
+        <span class="label">My streams</span>
+      </button>
+      <span class="nav-item nav-item--muted">
+        <span aria-hidden="true">📹</span>
+        <span class="label">Recordings (soon)</span>
+      </span>
+      <div class="nav-section">Manage</div>
+      <button type="button" class="nav-item" data-panel="destinations">
+        <span aria-hidden="true">🌐</span>
+        <span class="label">Destinations</span>
+      </button>
+      <button type="button" class="nav-item" data-panel="schedule">
+        <span aria-hidden="true">📅</span>
+        <span class="label">Live schedule</span>
+      </button>
+      <span class="nav-item nav-item--muted">
+        <span aria-hidden="true">📊</span>
+        <span class="label">Analytics (soon)</span>
+      </span>
+    </nav>
+    <div class="channel-card">
+      <div class="channel-avatar" aria-hidden="true">RS</div>
+      <div>
+        <div class="channel-name">Research channel</div>
+        <div class="channel-sub">Researchium Studio</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <a class="back-link" href="researchium-stream.html">← Back to home</a>
+        <h1 class="topbar-title" id="pageTitle">Go live</h1>
+      </div>
+      <div class="topbar-right">
+        <button type="button" class="btn btn-ghost" id="btnSchedule">+ Schedule class</button>
+        <button type="button" class="btn btn-primary" id="goLiveBtn">● Go live</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="panel active" id="panel-go-live" data-panel="go-live">
+        <div class="status-bar">
+          <div>
+            <span class="status-dot" id="statusDot"></span>
+            <strong id="statusLabel">Offline</strong>
+          </div>
+          <span id="reactViewerMount"></span>
+          <span><strong id="viewerCount">0</strong> viewers</span>
+          <span id="viewerBreakdown" class="viewer-breakdown" style="font-size:12px;color:var(--text2)"></span>
+          <span>Duration <strong id="duration">00:00:00</strong></span>
+          <span>Bitrate <strong id="bitrate">— kbps</strong></span>
+        </div>
+        <p style="color:var(--text2);font-size:14px;max-width:560px">
+          Connect OBS or use the browser studio, then click <strong>Go live</strong> to start your research broadcast.
+        </p>
+        <div id="studioPreviewWrap" style="display:none;margin-top:20px;max-width:420px">
+          <div style="aspect-ratio:16/9;background:#1a1f2e;border-radius:12px;overflow:hidden;position:relative;border:1px solid var(--border)">
+            <video id="studioLiveVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;display:none"></video>
+            <div id="studioPreviewPlaceholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:13px;text-align:center;padding:16px">
+              Camera preview will appear here
+            </div>
+          </div>
+          <p id="studioMediaHint" style="font-size:12px;color:var(--text2);margin-top:8px"></p>
+          <button type="button" class="btn" id="btnStudioMedia" style="margin-top:8px;display:none">Allow mic/cam</button>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-streams" data-panel="streams">
+        <div class="upgrade-banner">✨ Get more destinations and analytics — upgrade your plan</div>
+        <div class="toolbar">
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab active" data-filter="all">All</button>
+            <button type="button" class="tab" data-filter="draft">Drafts</button>
+            <button type="button" class="tab" data-filter="scheduled">Scheduled</button>
+          </div>
+          <button type="button" class="btn btn-primary" id="btnNewStream">+ New Stream</button>
+        </div>
+        <table class="streams-table">
+          <thead>
+            <tr>
+              <th>Stream title</th>
+              <th>Status</th>
+              <th>Channels</th>
+              <th>Last edited</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="streamsBody"></tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="panel-destinations" data-panel="destinations">
+        <h2 style="font-size:20px;margin-bottom:8px">Multi-platform streaming</h2>
+        <p style="color:var(--text2);font-size:14px;max-width:640px">
+          Connect YouTube, Twitch, Facebook Live, and LinkedIn with OAuth. Stream keys are stored encrypted.
+          Use <strong>Go live everywhere</strong> to create broadcasts on all connected platforms at once.
+        </p>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" class="btn btn-primary" id="btnGoLiveAll">● Go live everywhere</button>
+          <button type="button" class="btn" id="btnRefreshPlatforms">Refresh</button>
+        </div>
+        <div id="reactPlatformsMount"></div>
+        <div class="platform-grid" id="platformGrid" hidden></div>
+        <div class="ingest-box" id="multistreamIngest" hidden></div>
+      </section>
+
+      <section class="panel" id="panel-schedule" data-panel="schedule">
+        <h2 style="font-size:18px;margin-bottom:16px">Upcoming classes</h2>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+          <li style="padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
+            <strong>Today 7 PM</strong> — Real Analysis · Sequences
+          </li>
+          <li style="padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
+            <strong>Tomorrow 6 PM</strong> — Molecular Biology · Central Dogma
+          </li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="newStreamModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal">
+      <div class="modal-step active" id="modalStepChoose">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">Create a new stream</h2>
+          <button type="button" class="modal-close" id="modalClose" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <button type="button" class="stream-option" data-choice="rtmp">
+            <span class="stream-option-icon" aria-hidden="true">▦</span>
+            <span class="stream-option-text">
+              <span class="stream-option-title">Encoder | RTMP</span>
+              <span class="stream-option-desc">Stream from OBS, Zoom, vMix, etc.</span>
+            </span>
+            <span class="stream-option-arrow" aria-hidden="true">›</span>
+          </button>
+          <button type="button" class="stream-option" data-choice="prerecorded">
+            <span class="stream-option-icon" aria-hidden="true">🎬</span>
+            <span class="stream-option-text">
+              <span class="stream-option-title">Pre-recorded livestream</span>
+              <span class="stream-option-desc">Turn videos or stream recordings into broadcasts.</span>
+            </span>
+            <span class="stream-option-arrow" aria-hidden="true">›</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-step" id="modalStepRtmp">
+        <button type="button" class="modal-back" id="modalBack">← Back</button>
+        <div class="modal-header" style="padding-top:0">
+          <h2 class="modal-title">Encoder | RTMP</h2>
+          <button type="button" class="modal-close modal-close-inner" aria-label="Close">×</button>
+        </div>
+        <p style="padding:0 22px 12px;font-size:13px;color:#64748b">
+          Copy these into OBS → Settings → Stream. Then start streaming in OBS and click <strong>Go live</strong> here.
+        </p>
+        <div class="rtmp-box">
+          <div class="rtmp-label">RTMP server URL</div>
+          <div id="rtmpUrl">rtmp://127.0.0.1:1935/live</div>
+        </div>
+        <div class="rtmp-box">
+          <div class="rtmp-label">Stream key</div>
+          <div id="rtmpKey">••••-••••-•••• (request from API)</div>
+        </div>
+        <div style="padding:0 16px 20px">
+          <button type="button" class="btn btn-primary" id="btnRtmpDone" style="width:100%;justify-content:center">Done</button>
+        </div>
+      </div>
+      <div class="modal-step" id="modalStepSoon">
+        <button type="button" class="modal-back modal-back-soon">← Back</button>
+        <div class="modal-header" style="padding-top:0">
+          <h2 class="modal-title">Coming soon</h2>
+          <button type="button" class="modal-close modal-close-inner" aria-label="Close">×</button>
+        </div>
+        <p style="padding:8px 22px 24px;font-size:14px;color:#64748b;line-height:1.6">
+          Pre-recorded livestreams will be available in a future release. Use <strong>Researchium Studio</strong> or <strong>RTMP</strong> for now.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const host = location.hostname;
+      if (host === '127.0.0.1' || host === 'localhost') {
+        window.RESEARCHIUM_STUDIO_URL = 'http://127.0.0.1:5050';
+      }
+    })();
+  </script>
+  <script src="js/studio-auth.js"></script>
+  <script src="js/dashboard-api.js"></script>
+  <script src="js/multistream-api.js"></script>
+  <script src="js/studio-controls.js"></script>
+  <script src="js/stream-components-loader.js"></script>
+  <script src="js/studio-media.js"></script>
+  <script>
+    const auth = window.ResearchiumStudio;
+    const dashboardApi = window.ResearchiumDashboardApi;
+    const multistreamApi = window.ResearchiumMultistreamApi;
+    const titles = {
+      'go-live': 'Go live',
+      streams: 'My streams',
+      destinations: 'Destinations',
+      schedule: 'Live schedule',
+    };
+    let lastBroadcastId = null;
+    const params = new URLSearchParams(location.search);
+    const studioMedia = window.ResearchiumMedia;
+
+    function applyUserToSidebar(user) {
+      const nameEl = document.querySelector('.channel-name');
+      if (nameEl && user?.name) nameEl.textContent = user.name;
+      const avatar = document.querySelector('.channel-avatar');
+      if (avatar && user?.name) {
+        avatar.textContent = user.name
+          .split(/\s+/)
+          .map((w) => w[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase();
+      }
+    }
+
+    function formatEdited(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      const now = new Date();
+      const sameDay = d.toDateString() === now.toDateString();
+      const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      if (sameDay) return `Today, ${time}`;
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (d.toDateString() === yesterday.toDateString()) return `Yesterday, ${time}`;
+      return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+
+    function statusBadge(status) {
+      if (status === 'live') return '<span class="badge badge-live">Live</span>';
+      if (status === 'scheduled') return '<span class="badge">Scheduled</span>';
+      if (status === 'ended') return '<span class="badge">Ended</span>';
+      return `<span class="badge">${status || 'Draft'}</span>`;
+    }
+
+    function renderStreamsTable(streams) {
+      const tbody = document.getElementById('streamsBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (!streams?.length) {
+        tbody.innerHTML =
+          '<tr><td colspan="5" style="text-align:center;color:var(--text2);padding:24px">No streams yet. Click + New Stream to start.</td></tr>';
+        return;
+      }
+      streams.forEach((s) => {
+        const tr = document.createElement('tr');
+        tr.dataset.roomSlug = s.roomSlug;
+        tr.style.cursor = 'pointer';
+        tr.innerHTML = `
+          <td>
+            <div class="stream-cell">
+              <div class="thumb"></div>
+              <div>
+                <div class="stream-title"></div>
+                <div class="stream-meta"></div>
+              </div>
+            </div>
+          </td>
+          <td class="stream-status"></td>
+          <td>Browser</td>
+          <td class="stream-edited"></td>
+          <td>⋯</td>`;
+        tr.querySelector('.stream-title').textContent = s.title;
+        tr.querySelector('.stream-meta').textContent = s.channel || 'Studio';
+        tr.querySelector('.stream-status').innerHTML = statusBadge(s.status);
+        tr.querySelector('.stream-edited').textContent = formatEdited(s.updatedAt || s.createdAt);
+        tr.addEventListener('click', async () => {
+          try {
+            const meeting = await dashboardApi.getMeeting(s.roomSlug);
+            auth.saveStudioSession(meeting);
+            location.href = 'studio.html';
+          } catch {
+            alert('Could not open this stream.');
+          }
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    let analyticsPollTimer = null;
+
+    function applyAnalytics(data) {
+      const controls = window.ResearchiumStudioControls;
+      if (!controls || !data) return;
+      document.getElementById('viewerCount').textContent = String(data.totalViewers ?? 0);
+      controls.renderAnalyticsBar(data, null, document.getElementById('viewerBreakdown'));
+    }
+
+    function startDashboardAnalytics(roomSlug) {
+      const controls = window.ResearchiumStudioControls;
+      if (!controls || !roomSlug) return;
+      clearInterval(analyticsPollTimer);
+      const tick = () => controls.getAnalytics(roomSlug).then(applyAnalytics).catch(() => {});
+      tick();
+      analyticsPollTimer = setInterval(tick, 12000);
+      controls.startAnalytics(roomSlug).catch(() => {});
+    }
+
+    function applyDashboard(data) {
+      if (data?.user) applyUserToSidebar(data.user);
+      renderStreamsTable(data?.streams);
+      const active = data?.activeMeeting;
+      if (active) {
+        document.getElementById('pageTitle').textContent = active.title || 'Go live';
+        const dot = document.getElementById('statusDot');
+        const label = document.getElementById('statusLabel');
+        if (active.status === 'live' || active.isLive) {
+          dot?.classList.add('live');
+          if (label) label.textContent = 'Live';
+          startDashboardAnalytics(active.roomSlug);
+        } else {
+          clearInterval(analyticsPollTimer);
+        }
+        const raw = sessionStorage.getItem('researchium_studio_session');
+        if (!raw && active.roomSlug) {
+          dashboardApi.getMeeting(active.roomSlug).then((m) => auth.saveStudioSession(m)).catch(() => {});
+        }
+      }
+    }
+
+    async function loadDashboard() {
+      const data = await dashboardApi.getDashboard();
+      applyDashboard(data);
+      return data;
+    }
+
+    const platformIcons = {
+      youtube: '▶',
+      twitch: '💜',
+      facebook: 'ƒ',
+      linkedin: 'in',
+    };
+
+    async function renderPlatforms() {
+      const grid = document.getElementById('platformGrid');
+      if (!grid || !multistreamApi) return;
+      try {
+        const { connections } = await multistreamApi.getConnections();
+        grid.innerHTML = '';
+        connections.forEach((p) => {
+          const card = document.createElement('div');
+          card.className = 'platform-card' + (p.connected ? ' connected' : '');
+          const status = !p.configured
+            ? 'Not configured on server'
+            : p.connected
+              ? `Connected · ${p.accountName || p.platform}`
+              : 'Not connected';
+          card.innerHTML = `
+            <h3><span>${platformIcons[p.platform] || '•'}</span> ${p.label}</h3>
+            <div class="status">${status}</div>
+            <div class="actions"></div>`;
+          const actions = card.querySelector('.actions');
+          if (p.configured && !p.connected) {
+            const connect = document.createElement('button');
+            connect.type = 'button';
+            connect.className = 'btn btn-primary';
+            connect.textContent = 'Connect';
+            connect.addEventListener('click', async () => {
+              const { authUrl } = await multistreamApi.startOAuth(p.platform);
+              location.href = authUrl;
+            });
+            actions.appendChild(connect);
+          }
+          if (p.connected) {
+            const disconnect = document.createElement('button');
+            disconnect.type = 'button';
+            disconnect.className = 'btn';
+            disconnect.textContent = 'Disconnect';
+            disconnect.addEventListener('click', async () => {
+              await multistreamApi.disconnect(p.platform);
+              renderPlatforms();
+            });
+            actions.appendChild(disconnect);
+          }
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        grid.innerHTML =
+          '<p style="color:var(--text2)">Start studio backend on port 5050 to manage destinations.</p>';
+      }
+    }
+
+    document.getElementById('btnRefreshPlatforms')?.addEventListener('click', renderPlatforms);
+    document.getElementById('btnGoLiveAll')?.addEventListener('click', async () => {
+      const title =
+        document.getElementById('pageTitle')?.textContent?.trim() || 'Researchium Live';
+      const dash = await loadDashboard().catch(() => ({}));
+      const roomSlug = dash?.activeMeeting?.roomSlug;
+      try {
+        const result = await multistreamApi.goLiveAll({
+          title,
+          roomSlug,
+          description: 'Live from Researchium Studio',
+        });
+        lastBroadcastId = result.broadcastId;
+        const box = document.getElementById('multistreamIngest');
+        if (box) {
+          box.hidden = false;
+          box.textContent = JSON.stringify(result.ingest, null, 2) +
+            '\n\n' +
+            result.targets
+              .map((t) =>
+                t.ok
+                  ? `✓ ${t.platform}: ${t.playbackUrl || t.rtmpUrl || 'ready'}`
+                  : `✗ ${t.platform}: ${t.error}`
+              )
+              .join('\n');
+        }
+        alert(
+          result.status === 'live'
+            ? 'Live on all connected platforms!'
+            : `Partial live (${result.status}). See ingest details below.`
+        );
+      } catch (e) {
+        alert(e.message || 'Go-live failed');
+      }
+    });
+
+    function mountReactComponents(activeSlug) {
+      const loader = window.ResearchiumStreamComponentsLoader;
+      if (!loader) return false;
+      return loader.init({
+        roomSlug: activeSlug,
+        platformsEl: document.getElementById('reactPlatformsMount'),
+        showGoLive: true,
+        viewerEl: document.getElementById('reactViewerMount'),
+        viewerCompact: true,
+        intervalMs: 5000,
+        onGoLiveResult: (result) => {
+          lastBroadcastId = result.broadcastId;
+          const box = document.getElementById('multistreamIngest');
+          if (box) {
+            box.hidden = false;
+            box.textContent =
+              JSON.stringify(result.ingest, null, 2) +
+              '\n\n' +
+              (result.targets || [])
+                .map((t) =>
+                  t.ok
+                    ? `✓ ${t.platform}: ${t.playbackUrl || t.rtmpUrl || 'ready'}`
+                    : `✗ ${t.platform}: ${t.error}`
+                )
+                .join('\n');
+          }
+          loadDashboard();
+        },
+      });
+    }
+
+    auth
+      .ensureSignedIn()
+      .then(async () => {
+        const dash = await loadDashboard();
+        const slug = dash?.activeMeeting?.roomSlug;
+        const mounted = await mountReactComponents(slug);
+        if (mounted) {
+          document.getElementById('viewerCount')?.closest('span')?.setAttribute('hidden', '');
+          document.getElementById('viewerBreakdown')?.setAttribute('hidden', '');
+        } else {
+          document.getElementById('platformGrid').hidden = false;
+          renderPlatforms();
+        }
+      })
+      .catch(() => location.replace('studio-lobby.html?manual=1'));
+
+    function showPanel(panelId) {
+      document.querySelectorAll('.nav-item[data-panel]').forEach((n) => {
+        n.classList.toggle('active', n.dataset.panel === panelId);
+      });
+      document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+      document.getElementById('panel-' + panelId)?.classList.add('active');
+      document.getElementById('pageTitle').textContent = titles[panelId] || 'Studio';
+    }
+
+    if (params.get('panel') === 'destinations') showPanel('destinations');
+    if (params.get('oauth') === 'connected') {
+      showPanel('destinations');
+      renderPlatforms();
+    }
+
+    const modal = document.getElementById('newStreamModal');
+    const stepChoose = document.getElementById('modalStepChoose');
+    const stepRtmp = document.getElementById('modalStepRtmp');
+    const stepSoon = document.getElementById('modalStepSoon');
+
+    function openModal() {
+      stepChoose.classList.add('active');
+      stepRtmp.classList.remove('active');
+      stepSoon.classList.remove('active');
+      modal.hidden = false;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('modalClose')?.focus();
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+      modal.hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    function showModalStep(stepEl) {
+      [stepChoose, stepRtmp, stepSoon].forEach((s) => s.classList.remove('active'));
+      stepEl.classList.add('active');
+    }
+
+    document.getElementById('btnNewStream')?.addEventListener('click', () => {
+      auth
+        .openBrowserStudio({ forceNew: true })
+        .catch(() => alert('Could not start studio. Is the API running on port 4000?'));
+    });
+    document.getElementById('modalClose')?.addEventListener('click', closeModal);
+    document.querySelectorAll('.modal-close-inner').forEach((btn) => {
+      btn.addEventListener('click', closeModal);
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+
+    document.getElementById('modalBack')?.addEventListener('click', () => showModalStep(stepChoose));
+    document.querySelector('.modal-back-soon')?.addEventListener('click', () => showModalStep(stepChoose));
+
+    document.querySelectorAll('.stream-option').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const choice = btn.dataset.choice;
+        if (choice === 'rtmp') {
+          showModalStep(stepRtmp);
+        } else if (choice === 'prerecorded') {
+          showModalStep(stepSoon);
+        }
+      });
+    });
+
+    document.getElementById('btnRtmpDone')?.addEventListener('click', () => {
+      closeModal();
+      showPanel('go-live');
+    });
+
+    if (params.get('new') === '1') {
+      showPanel('streams');
+      openModal();
+    }
+
+    async function initStudioPreview() {
+      const wrap = document.getElementById('studioPreviewWrap');
+      const video = document.getElementById('studioLiveVideo');
+      const placeholder = document.getElementById('studioPreviewPlaceholder');
+      const hint = document.getElementById('studioMediaHint');
+      const btn = document.getElementById('btnStudioMedia');
+      if (!wrap || !studioMedia) return;
+      wrap.style.display = 'block';
+
+      async function applyStream() {
+        if (studioMedia.isGranted()) {
+          studioMedia.attachPreview(video);
+          video.style.display = 'block';
+          placeholder.style.display = 'none';
+          hint.textContent = 'Mic and camera are ready. Click Go live when you are.';
+          btn.style.display = 'none';
+        }
+      }
+
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+          const prefs = studioMedia.loadPrefs();
+          await studioMedia.requestAccess(prefs);
+          await applyStream();
+        } catch (err) {
+          hint.textContent = studioMedia.getErrorMessage(err);
+          btn.disabled = false;
+        }
+      });
+
+      if (sessionStorage.getItem('researchium_media_granted') === '1') {
+        try {
+          await studioMedia.requestAccess(studioMedia.loadPrefs());
+          await applyStream();
+        } catch {
+          hint.textContent = 'Allow mic/cam again to restore your preview.';
+          btn.style.display = 'inline-flex';
+        }
+      } else {
+        hint.textContent = 'Allow camera and microphone to preview before going live.';
+        btn.style.display = 'inline-flex';
+      }
+    }
+
+    if (params.get('studio') === '1') {
+      showPanel('go-live');
+      const raw = sessionStorage.getItem('researchium_studio_session');
+      if (raw) {
+        try {
+          const s = JSON.parse(raw);
+          document.getElementById('pageTitle').textContent = s.stream?.title || 'Go live';
+        } catch { /* ignore */ }
+      }
+      initStudioPreview();
+    }
+
+    document.querySelectorAll('.nav-item[data-panel]').forEach((btn) => {
+      if (btn.dataset.panel === 'destinations') {
+        btn.addEventListener('click', () => renderPlatforms());
+      }
+      btn.addEventListener('click', () => showPanel(btn.dataset.panel));
+    });
+
+    document.getElementById('goLiveBtn')?.addEventListener('click', () => {
+      auth.openBrowserStudio().catch(() =>
+        alert('Could not open meeting. Is the API running on port 4000?')
+      );
+    });
+  </script>
+</body>
+</html>
