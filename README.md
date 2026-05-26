@@ -1,4 +1,4 @@
-# Researchium Stream
+# Researchium Stream Studio
 
 Live research broadcasting — landing page, backend API, signaling, and SFU.
 
